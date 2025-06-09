@@ -4,7 +4,12 @@
     <title>분실물 찾기 앱</title>
 </head>
 <body>
+    {% if request.session.get("nickname") %}
+        <p>👋 {{ request.session.get('nickname') }}님 환영합니다! <a href="/logout">로그아웃</a></p>
+    {% else %}
+        <a href="/login">🔐 로그인</a>
+    {% endif %}
+    
     <h1>👀 분실물 찾기 앱에 오신 걸 환영합니다!</h1>
-    <p>이건 메인 화면입니다. 이제 기능 하나씩 붙이자.</p>
 </body>
 </html>
