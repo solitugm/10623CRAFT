@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from models import Post, Comment
 from typing import Optional
 from sqlalchemy import Column, String
+from datetime import datetime, timedelta
 import models
 
 app = FastAPI()
@@ -86,3 +87,19 @@ def add_comment(post_id: int, content: str = Form(...), db: Session = Depends(ge
     db.add(comment)
     db.commit()
     return RedirectResponse(url=f"/post/{post_id}", status_code=302)
+
+@app.on_event("startup")
+def update_expired_posts():
+    db = SessionLocal()
+    try:
+        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        expired_posts = db.query(Post).filter(
+            Post.status == "진행중",
+            Post.created_at < thirty_days_ago
+        ).all()
+
+        for post in expired_posts:
+            post.status = "임박" # type: ignore
+        db.commit()
+    finally:
+        db.close()
