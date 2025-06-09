@@ -4,6 +4,12 @@
     <title>{{ post.title }} - 상세</title>
 </head>
 <body>
+    {% if request.session.get("nickname") %}
+        <p>👋 {{ request.session.get('nickname') }}님 환영합니다! <a href="/logout">로그아웃</a></p>
+    {% else %}
+        <a href="/login">로그인</a>
+    {% endif %}
+
     <h1>{{ post.title }}</h1>
     <p>{{ post.description }}</p>
     {% if post.image_path %}

@@ -1,11 +1,12 @@
 import os
-from fastapi import FastAPI, Request, Form, UploadFile, File, Depends, Path
+from fastapi import FastAPI, Request, Form, UploadFile, File, Depends, Path, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
 from database import Base, engine, SessionLocal
 from sqlalchemy.orm import Session
-from models import Post, Comment
+from models import Post, Comment, User
 from typing import Optional
 from sqlalchemy import Column, String
 from datetime import datetime, timedelta
@@ -23,6 +24,8 @@ async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 models.Base.metadata.create_all(bind=engine)
+
+app.add_middleware(SessionMiddleware, secret_key="super-secret-key") 
 
 UPLOAD_DIR = "static/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -103,3 +106,24 @@ def update_expired_posts():
         db.commit()
     finally:
         db.close()
+
+@app.get("/login", response_class=HTMLResponse)
+def login_form(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+@app.post("/login")
+def login(request: Request, response: Response, nickname: str = Form(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.nickname == nickname).first()
+    if not user:
+        user = User(nickname=nickname)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    request.session["user_id"] = user.id
+    request.session["nickname"] = user.nickname
+    return RedirectResponse(url="/posts", status_code=302)
+
+@app.get("/logout")
+def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/login", status_code=302)
