@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>분실물 등록</title>
+</head>
+<body>
+    <h1>📦 분실물 등록하기</h1>
+    <form action="/create" method="post" enctype="multipart/form-data">
+        <label>제목:</label><br>
+        <input type="text" name="title" required><br><br>
+
+        <label>설명:</label><br>
+        <textarea name="description"></textarea><br><br>
+
+        <label>사진 업로드:</label><br>
+        <input type="file" name="image"><br><br>
+
+        <button type="submit">등록</button>
+    </form>
+</body>
+</html>

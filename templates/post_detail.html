@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ post.title }} - 상세</title>
+</head>
+<body>
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.description }}</p>
+    {% if post.image_path %}
+        <img src="/{{ post.image_path }}" width="200">
+    {% endif %}
+    <p>상태: {{ post.status }}</p>
+    <p>등록일: {{ post.created_at }}</p>
+
+    <hr>
+    <h2>댓글</h2>
+    <ul>
+        {% for comment in post.comments %}
+            <li>{{ comment.content }} - {{ comment.created_at }}</li>
+        {% endfor %}
+    </ul>
+
+    <form action="/post/{{ post.id }}/comment" method="post">
+        <textarea name="content" placeholder="댓글 작성..." required></textarea><br>
+        <button type="submit">댓글 등록</button>
+    </form>
+
+    <br><a href="/posts">← 목록으로 돌아가기</a>
+</body>
+</html>

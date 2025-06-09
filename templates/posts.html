@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>분실물 목록</title>
+</head>
+<body>
+    <h1>🧾 분실물 목록</h1>
+    <a href="/create">➕ 새로 등록하기</a><br><br>
+
+    {% for post in posts %}
+        <div>
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.description }}</p>
+            {% if post.image_path %}
+                <img src="/{{ post.image_path }}" width="200">
+            {% endif %}
+            <p>상태: {{ post.status }}</p>
+            <p>등록일: {{ post.created_at }}</p>
+
+            <!-- ✅ 상세보기 링크 여기다 추가 -->
+            <a href="/post/{{ post.id }}">🔍 상세보기</a>
+
+            <form action="/complete/{{ post.id }}" method="post">
+                {% if post.status != "완료" %}
+                    <button type="submit">찾았어요 ✅</button>
+                {% else %}
+                    <strong>✔ 이미 찾은 물건입니다</strong>
+                {% endif %}
+            </form>
+        </div>
+    {% endfor %}
+</body>
+</html>
